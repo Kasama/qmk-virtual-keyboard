@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use hidapi::HidApi;
-use log::trace;
+use log::{debug, trace};
 
 const REPORT_LENGTH: usize = 32;
 
@@ -49,6 +49,7 @@ impl ToString for Layers {
     }
 }
 
+#[derive(Debug)]
 pub enum Operation {
     Bootloader,
     GetLayer,
@@ -144,20 +145,19 @@ impl Keyboard {
 
         buffer[1..].copy_from_slice(&operation.report());
 
+        debug!("Writing: {:?}", operation);
         trace!("Writing: {:02x?}", buffer);
 
-        let wrote = self
+        let _wrote = self
             .device
             .write(&buffer)
             .expect("Could not write to HID device");
-
-        trace!("Wrote: {wrote:02x?} bytes");
 
         let mut resp_buf = [0u8; REPORT_LENGTH];
 
         let response = self
             .device
-            .read_timeout(&mut resp_buf, 1000)
+            .read_timeout(&mut resp_buf, 10000)
             .map(|_| ())
             .transpose()
             .and_then(|e| {
@@ -170,6 +170,7 @@ impl Keyboard {
             .transpose()
             .map(|_| KeyboardResponse::parse_response(resp_buf))?;
 
+        debug!("Response: {:?}", response);
         trace!("Response: {:02x?}", resp_buf);
 
         Ok(response)

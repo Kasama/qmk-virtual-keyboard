@@ -14,5 +14,12 @@ futures = "0.3"
 log = "0.4"
 tokio = { version = "1", features = ["full"] }
 tokio-i3ipc = "0.16.0"
+uinput-tokio = "0.1"
 async-trait = "0.1"
+nix = "0.27"
 simple_logger = "4"
+strum = "0.25"
+strum_macros = "0.25"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+serde_tuple = "0.5.0"
